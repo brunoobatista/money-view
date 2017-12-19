@@ -1,0 +1,57 @@
+<div class="container">
+  <div class="ui-g">
+
+      <form autocomplete="off" (ngSubmit)="pesquisar()">
+    <div class="ui-g-12">
+      <h1>Pessoas</h1>
+    </div>
+
+    <div class="ui-g-12 ui-fluid">
+      <label>Nome</label>
+      <input type="text" pInputText name="nome" [(ngModel)]="filtro.nome">
+    </div>
+
+    <div class="ui-g-12">
+      <button type="submit" pButton label="Pesquisar"></button>
+    </div>
+   </form>
+  </div>
+
+  <div class="ui-g">
+    <div class="ui-g-12">
+      <p-dataTable [value]="pessoas" emptyMessage="Nenhuma pessoa encontrada!"
+         [paginator]="true" [rows]="filtro.itensPorPagina" [responsive]="true"
+         [lazy]="true" [totalRecords]="totalRegistros" (onLazyLoad)="aoMudarPagina($event)"
+         [immutable]="false" #tabela>
+         <p-column field="nome" header="Nome"></p-column>
+         <p-column field="cidade" header="Cidade"></p-column>
+         <p-column field="estado" header="Estado" styleClass="col-status"></p-column>
+         <p-column field="ativo" header="Status" styleClass="col-status">
+           <ng-template let-pessoa="rowData" pTemplate="body">
+               <a></a>
+
+               <button type="button" pButton (click)="alternarStatus(pessoa)"
+                  label="{{pessoa.ativo ? 'Ativo' : 'Inativo'}}"
+                  class="ui-button ui-widget ui-state-default ui-corner-all ui-button-text-only ui-button-{{pessoa.ativo ? 'info' : 'warning'}}">
+               </button>
+           </ng-template>
+         </p-column>
+         <p-column styleClass="col-acoes">
+            <ng-template pTemplate="body" let-pes="rowData">
+               <a pButton icon="fa-pencil-square-o" pTooltip="Editar"
+                  tooltipPosition="top"
+                  [routerLink]="['/pessoas', pes.codigo]"></a>
+               <button type="" pButton icon="fa-trash-o"
+                  pTooltip="Excluir" tooltipPosition="top"
+                  (click)="confirmarExclusao(pes)"></button>
+            </ng-template>
+         </p-column>
+       </p-dataTable>
+    </div>
+  </div>
+
+  <div class="ui-g-12">
+    <a pButton label="Nova Pessoa" routerLink="/pessoas/nova"></a>
+  </div>
+
+</div>
