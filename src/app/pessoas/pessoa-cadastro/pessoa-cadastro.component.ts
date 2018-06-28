@@ -1,6 +1,6 @@
 import { Title } from '@angular/platform-browser';
 import { Router, ActivatedRoute } from '@angular/router';
-import { FormControl } from '@angular/forms';
+import { FormGroup, FormBuilder, Validators, FormControl } from '@angular/forms';
 import { Component, OnInit } from '@angular/core';
 
 import { ToastyService } from 'ng2-toasty';
@@ -18,6 +18,7 @@ export class PessoaCadastroComponent implements OnInit {
 
    pessoa = new Pessoa();
    titulo: string;
+   formulario: FormGroup;
 
    constructor(
       private pessoaService: PessoaService,
@@ -25,7 +26,8 @@ export class PessoaCadastroComponent implements OnInit {
       private toasty: ToastyService,
       private route: Router,
       private activatedRoute: ActivatedRoute,
-      private title: Title
+      private title: Title,
+      private formBuilder: FormBuilder
    ) { }
 
    ngOnInit() {
@@ -38,6 +40,30 @@ export class PessoaCadastroComponent implements OnInit {
          this.titulo = 'Nova pessoa';
          this.title.setTitle(`Nova pessoa`);
       }
+   }
+
+   configurarFormulario() {
+      this.formulario = this.formBuilder.group({
+         codigo: [],
+         nome: [null, [this.validarObrigatoriedade, this.validarTamanhoMinimo(5)]],
+         logradouro: [null, this.validarObrigatoriedade],
+         numero: [null, this.validarObrigatoriedade],
+         complemento: [],
+         bairro: [null, this.validarObrigatoriedade],
+         cep: [null, this.validarObrigatoriedade],
+         cidade: [null, this.validarObrigatoriedade],
+         estado: [null, this.validarObrigatoriedade]
+      });
+   }
+
+   validarObrigatoriedade(input: FormControl) {
+      return (input.value ? null : { obrigatoriedade: true });
+   }
+
+   validarTamanhoMinimo(valor: number) {
+      return (input: FormControl) => {
+         return (!input.value || input.value.length >= valor) ? null : { tamanhoMinimo: { tamanho: valor } };
+      };
    }
 
    carregarPessoa(codigo: number) {
