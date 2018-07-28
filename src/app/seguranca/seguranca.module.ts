@@ -6,8 +6,8 @@ import { Http, RequestOptions } from '@angular/http';
 
 import { AuthHttp, AuthConfig } from 'angular2-jwt';
 
-import { InputTextModule } from 'primeng/components/inputtext/inputtext';
-import { ButtonModule } from 'primeng/components/button/button';
+import { InputTextModule } from 'primeng/inputtext';
+import { ButtonModule } from 'primeng/button';
 
 import { MoneyHttp } from './money-http';
 import { AuthService } from './auth.service';
