@@ -14,6 +14,7 @@ import { NavbarComponent } from './navbar/navbar.component';
 import { LancamentoService } from './../lancamentos/lancamento.service';
 import { PessoaService } from './../pessoas/pessoa.service';
 import { AuthService } from './../seguranca/auth.service';
+import { DashboardService } from './../dashboard/dashboard.service';
 
 import { CategoriaService } from './../categorias/categoria.service';
 import { PaginaNaoEncontradaComponent } from './pagina-nao-encontrada.component';
@@ -45,7 +46,7 @@ registerLocaleData(localePt);
       AuthService,
 
       CategoriaService,
-
+      DashboardService,
       ConfirmationService,
       JwtHelper,
       Title,
