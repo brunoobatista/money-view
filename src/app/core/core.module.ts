@@ -15,6 +15,7 @@ import { LancamentoService } from './../lancamentos/lancamento.service';
 import { PessoaService } from './../pessoas/pessoa.service';
 import { AuthService } from './../seguranca/auth.service';
 import { DashboardService } from './../dashboard/dashboard.service';
+import { RelatoriosService } from './../relatorios/relatorios.service';
 
 import { CategoriaService } from './../categorias/categoria.service';
 import { PaginaNaoEncontradaComponent } from './pagina-nao-encontrada.component';
@@ -47,6 +48,8 @@ registerLocaleData(localePt);
 
       CategoriaService,
       DashboardService,
+      RelatoriosService,
+
       ConfirmationService,
       JwtHelper,
       Title,
