@@ -57,6 +57,7 @@ export class LancamentoCadastroComponent implements OnInit {
       this.carregarCategorias();
       this.carregarPessoas();
       this.traducao();
+      console.log(this.formulario);
    }
 
    configurarFormulario() {
