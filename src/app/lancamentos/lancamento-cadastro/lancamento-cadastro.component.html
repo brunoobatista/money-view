@@ -47,16 +47,13 @@
          <label>Categoria</label>
          <p-dropdown [options]="categorias" [autoWidth]="false" placeholder="Selecione"
             name="categoria" formControlName="codigo"></p-dropdown>
-         <app-message [control]="formulario.get('valor')" error="obrigatoriedade"
-            text="Infome uma categoria"></app-message>
+
       </div>
       <div class="ui-g-12 ui-md-6 ui-fluid" formGroupName="pessoa">
          <label>Pessoa</label>
          <p-dropdown [options]="pessoas" [autoWidth]="false" [filter]="true" placeholder="Selecione"
             name="pessoa" formControlName="codigo"></p-dropdown>
 
-         <app-message [control]="formulario.get('valor')" error="obrigatoriedade"
-            text="Infome uma pessoa"></app-message>
       </div>
       <div class="ui-g-12 ui-fluid">
          <label>Observação</label>

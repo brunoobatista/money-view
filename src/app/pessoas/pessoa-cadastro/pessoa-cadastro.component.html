@@ -1,5 +1,5 @@
 <div class="container">
-   <form autocomplete="off" (ngSubmit)="salvar()" formGroup="formulario">
+   <form autocomplete="off" (ngSubmit)="salvar()" [formGroup]="formulario">
       <div class="ui-g">
          <div class="ui-g-12">
             <h1>{{ titulo }}</h1>
@@ -8,69 +8,85 @@
          <div class="ui-g-12 ui-fluid">
             <label>Nome</label>
             <input pInputText type="text" name="nome" formControlName="nome">
+
             <app-message [control]="formulario.get('nome')" error="obrigatoriedade"
-               text="Informe o nome"></app-message>
-            <app-message [control]="nome" error="tamanhoMinimo"
-               text="Mímino de {{ nome.errors?.minlength?.requiredLength }} caracteres"></app-message>
-         </div>
+               text="Infome o nome"></app-message>
 
-         <div class="ui-g-12 ui-md-9 ui-fluid">
-            <label>Logradouro</label>
-            <input pInputText type="text" name="logradouro" [(ngModel)]="pessoa.endereco.logradouro"
-               #logradouro="ngModel" required>
-            <app-message [control]="logradouro" error="obrigatoriedade"
-               text="Informe o logradouro"></app-message>
-         </div>
-         <div class="ui-g-12 ui-md-3 ui-fluid">
-            <label>Número</label>
-            <input pInputText type="text" name="numero" [(ngModel)]="pessoa.endereco.numero"
-               #numero="ngModel" required>
-            <app-message [control]="numero" error="obrigatoriedade"
-               text="Informe o número"></app-message>
-         </div>
-         <div class="ui-g-12 ui-md-4 ui-fluid">
-            <label>Complemento</label>
-            <input pInputText type="text" name="complemento" [(ngModel)]="pessoa.endereco.complemento">
-         </div>
-         <div class="ui-g-12 ui-md-4 ui-fluid">
-            <label>Bairro</label>
-            <input pInputText type="text" name="bairro" [(ngModel)]="pessoa.endereco.bairro"
-               #bairro="ngModel" required>
-            <app-message [control]="bairro" error="obrigatoriedade"
-               text="Informe o bairro"></app-message>
-         </div>
-         <div class="ui-g-12 ui-md-4 ui-fluid">
-            <label>CEP</label>
-            <p-inputMask name="cep" mask="99.999-999"
-               [(ngModel)]="pessoa.endereco.cep" #cep="ngModel" required></p-inputMask>
+            <app-message [control]="formulario.get('nome')" error="tamanhoMinimo"
+               text="Mímino de {{ formulario.get('nome').errors?.tamanhoMinimo?.tamanho }} caracteres"></app-message>
 
-            <app-message [control]="cep" error="obrigatoriedade"
-               text="Informe o CEP"></app-message>
          </div>
+         <ng-container formGroupName="endereco">
+            <div class="ui-g-12 ui-md-9 ui-fluid">
+               <label>Logradouro</label>
+               <input pInputText type="text" name="logradouro" formControlName="logradouro"
+                  required>
+               <app-message [control]="formulario.get('endereco.logradouro')" error="obrigatoriedade"
+                  text="Informe o logradouro"></app-message>
+            </div>
+            <div class="ui-g-12 ui-md-3 ui-fluid">
+               <label>Número</label>
+               <input pInputText type="text" name="numero" formControlName="numero"
+                  required>
+               <app-message [control]="formulario.get('endereco.numero')" error="obrigatoriedade"
+                  text="Informe o número"></app-message>
+            </div>
+            <div class="ui-g-12 ui-md-4 ui-fluid">
+               <label>Complemento</label>
+               <input pInputText type="text" name="complemento" formControlName="complemento">
+            </div>
+            <div class="ui-g-12 ui-md-4 ui-fluid">
+               <label>Bairro</label>
+               <input pInputText type="text" name="bairro" formControlName="bairro"
+                   required>
+               <app-message [control]="formulario.get('endereco.bairro')" error="obrigatoriedade"
+                  text="Informe o bairro"></app-message>
+            </div>
+            <div class="ui-g-12 ui-md-4 ui-fluid">
+               <label>CEP</label>
+               <p-inputMask name="cep" mask="99.999-999"
+                  formControlName="cep" required></p-inputMask>
 
-         <div class="ui-g-12 ui-md-6 ui-fluid">
-            <label>Cidade</label>
-            <input pInputText type="text" name="cidade"
-               [(ngModel)]="pessoa.endereco.cidade" #cidade="ngModel" required>
+               <app-message [control]="formulario.get('endereco.cep')" error="obrigatoriedade"
+                  text="Informe o CEP"></app-message>
+            </div>
 
-            <app-message [control]="cidade" error="obrigatoriedade"
-               text="Informe a cidade"></app-message>
-         </div>
-         <div class="ui-g-12 ui-md-6 ui-fluid">
-            <label>Estado</label>
-            <input pInputText type="text" name="estado"
-               [(ngModel)]="pessoa.endereco.estado" #estado="ngModel" required>
+            <div class="ui-g-12 ui-md-6 ui-fluid">
+               <label>Cidade</label>
+               <input pInputText type="text" name="cidade"
+                  formControlName="cidade" required>
 
-            <app-message [control]="estado" error="obrigatoriedade"
-               text="Informe o estado"></app-message>
-         </div>
+               <app-message [control]="formulario.get('endereco.cidade')" error="obrigatoriedade"
+                  text="Informe a cidade"></app-message>
+            </div>
+            <div class="ui-g-12 ui-md-6 ui-fluid">
+               <label>Estado</label>
+               <input pInputText type="text" name="estado"
+                  formControlName="estado" required>
+
+               <app-message [control]="formulario.get('endereco.estado')" error="obrigatoriedade"
+                  text="Informe o estado"></app-message>
+            </div>
+         </ng-container>
+
+         <ng-container>
+            <div class="ui-g-12">
+               <p-panel header="Contatos">
+
+                  <app-pessoa-cadastro-contato [contatos]="formulario.get('contatos').value"></app-pessoa-cadastro-contato>
+
+               </p-panel>
+            </div>
+         </ng-container>
 
          <div class="ui-g-12">
-            <button pButton type="submit" label="Salvar" [disabled]="f.invalid"></button>
+            <button pButton type="submit" label="Salvar" [disabled]="formulario.invalid"></button>
             <button pButton type="button" label="Novo" class="ui-button-info"
-               (click)="novo(f)"></button>
+               (click)="novo()"></button>
             <a routerLink="/pessoas">Voltar para a pesquisa</a>
          </div>
       </div>
    </form>
 </div>
+
+
