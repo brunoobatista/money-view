@@ -60,6 +60,21 @@
          <textarea pInputTextarea rows="3" name="observacao" formControlName="observacao"></textarea>
       </div>
 
+      <div class="ui-g-6 ui-g-offset-6 ui-md-2 ui-md-offset-10 ui-fluid"
+         *ngIf="!formulario.get('anexo').value">
+         <p-fileUpload name="anexo" mode="basic" auto="true" maxFileSize="1000000000"
+            chooseLabel="Anexar" accept="image/*,application/*"
+            [url]="urlUploadAnexo"
+            (onBeforeSend)="antesUploadAnexo($event)"
+            (onUpload)="aoTerminarUploadAnexo($event)"
+            (onError)="erroUpload($event)"></p-fileUpload>
+      </div>
+
+      <div class="ui-g-12 ui-fluid" *ngIf="formulario.get('anexo').value" dir="rtl">
+         <a target="_blank" pTooltip="Baixar anexo" tooltipPosition="top"
+            [href]="formulario.get('urlAnexo').value">{{ nomeAnexo }}</a>
+      </div>
+
       <div class="ui-g-12">
          <button pButton type="submit" label="Salvar" [disabled]="formulario.invalid"></button>
          <button pButton type="button" label="Novo" class="ui-button-info"
