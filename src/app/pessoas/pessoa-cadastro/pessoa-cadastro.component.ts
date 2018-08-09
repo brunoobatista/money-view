@@ -1,13 +1,13 @@
 import { Title } from '@angular/platform-browser';
-import { Router, ActivatedRoute } from '@angular/router';
-import { FormGroup, FormBuilder, Validators, FormControl } from '@angular/forms';
+import { FormGroup, FormBuilder, Validators, FormControl, FormArray } from '@angular/forms';
 import { Component, OnInit } from '@angular/core';
+import { Router, ActivatedRoute } from '@angular/router';
 
 import { ToastyService } from 'ng2-toasty';
 import { ErrorHandlerService } from './../../core/error-handler.service';
 import { PessoaService } from './../pessoa.service';
 
-import { Pessoa } from './../../core/model';
+import { Pessoa, Contato } from './../../core/model';
 
 @Component({
   selector: 'app-pessoa-cadastro',
@@ -16,9 +16,11 @@ import { Pessoa } from './../../core/model';
 })
 export class PessoaCadastroComponent implements OnInit {
 
-   pessoa = new Pessoa();
+   // pessoa = new Pessoa();
    titulo: string;
    formulario: FormGroup;
+
+   contato: Contato;
 
    constructor(
       private pessoaService: PessoaService,
@@ -27,12 +29,12 @@ export class PessoaCadastroComponent implements OnInit {
       private route: Router,
       private activatedRoute: ActivatedRoute,
       private title: Title,
-      private formBuilder: FormBuilder
+      private formBuilder: FormBuilder,
    ) { }
 
    ngOnInit() {
+      this.configurarFormulario();
       const codigoPessoa = this.activatedRoute.snapshot.params['codigo'];
-      console.log('codigopessoa: ', codigoPessoa);
       if (codigoPessoa) {
          this.carregarPessoa(codigoPessoa);
          this.titulo = 'Editar pessoa';
@@ -44,15 +46,25 @@ export class PessoaCadastroComponent implements OnInit {
 
    configurarFormulario() {
       this.formulario = this.formBuilder.group({
-         codigo: [],
+         codigo: [null],
+         ativo: [null],
          nome: [null, [this.validarObrigatoriedade, this.validarTamanhoMinimo(5)]],
-         logradouro: [null, this.validarObrigatoriedade],
-         numero: [null, this.validarObrigatoriedade],
-         complemento: [],
-         bairro: [null, this.validarObrigatoriedade],
-         cep: [null, this.validarObrigatoriedade],
-         cidade: [null, this.validarObrigatoriedade],
-         estado: [null, this.validarObrigatoriedade]
+         contatos: [ this.formBuilder.group({
+            codigo: [null],
+            nome: [null],
+            email: [null],
+            telefone: [null]
+         }) ],
+         endereco: this.formBuilder.group({
+            bairro: [null, this.validarObrigatoriedade],
+            cep: [null, this.validarObrigatoriedade],
+            cidade: [null, this.validarObrigatoriedade],
+            complemento: [],
+            estado: [null, this.validarObrigatoriedade],
+            logradouro: [null, this.validarObrigatoriedade],
+            numero: [null, this.validarObrigatoriedade]
+         }),
+
       });
    }
 
@@ -67,53 +79,50 @@ export class PessoaCadastroComponent implements OnInit {
    }
 
    carregarPessoa(codigo: number) {
-      this.pessoaService.buscarPorCodigo(codigo)
+      this.pessoaService.buscarPorCodigo(this.activatedRoute.snapshot.params['codigo'])
       .then(resposta => {
-         this.pessoa = resposta;
+         this.formulario.patchValue(resposta);
          this.atualizarTituloEdicao();
       })
       .catch(erro => this.errorHandler.handle(erro));
    }
 
-   salvar(form: FormControl) {
+   salvar() {
       if (this.editando) {
-         this.atualizarPessoa(form);
+         this.atualizarPessoa();
       } else {
-         this.adicionarPessoa(form);
+         this.adicionarPessoa();
       }
    }
 
-   novo(form: FormControl) {
-      form.reset();
-      setTimeout(function() {
-         this.pessoa = new Pessoa();
-      }.bind(this), 1);
+   novo() {
+      this.formulario.reset();
       this.route.navigate(['/pessoas/nova']);
    }
 
    get editando() {
-      return Boolean(this.pessoa.codigo);
+      return Boolean(this.formulario.get('codigo').value);
    }
 
-   adicionarPessoa(form: FormControl) {
-      this.pessoaService.adicionar(this.pessoa)
+   adicionarPessoa() {
+      this.pessoaService.adicionar(this.formulario.value)
          .then(pessoaAdicionada => {
             this.toasty.success('Pessoa salva com sucesso!');
             this.route.navigate(['/pessoas', pessoaAdicionada.codigo]);
          }).catch(erro => this.errorHandler.handle(erro));
    }
 
-   atualizarPessoa(form: FormControl) {
-      this.pessoaService.atualizar(this.pessoa)
+   atualizarPessoa() {
+      this.pessoaService.atualizar(this.formulario.value)
          .then(response => {
-            this.pessoa = response;
+            this.formulario.patchValue(response);
             this.toasty.success('Pessoa atualizada com sucesso!');
             this.atualizarTituloEdicao();
          }).catch(error => this.errorHandler.handle(error));
    }
 
    atualizarTituloEdicao() {
-      this.title.setTitle(`Editando pessoa: ${this.pessoa.nome}`);
+      this.title.setTitle(`Editando pessoa: ${this.formulario.get('nome')}`);
    }
 
 }

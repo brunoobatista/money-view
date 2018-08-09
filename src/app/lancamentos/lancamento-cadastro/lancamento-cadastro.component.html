@@ -47,24 +47,43 @@
          <label>Categoria</label>
          <p-dropdown [options]="categorias" [autoWidth]="false" placeholder="Selecione"
             name="categoria" formControlName="codigo"></p-dropdown>
-         <app-message [control]="formulario.get('valor')" error="obrigatoriedade"
-            text="Infome uma categoria"></app-message>
+
       </div>
       <div class="ui-g-12 ui-md-6 ui-fluid" formGroupName="pessoa">
          <label>Pessoa</label>
          <p-dropdown [options]="pessoas" [autoWidth]="false" [filter]="true" placeholder="Selecione"
             name="pessoa" formControlName="codigo"></p-dropdown>
 
-         <app-message [control]="formulario.get('valor')" error="obrigatoriedade"
-            text="Infome uma pessoa"></app-message>
       </div>
       <div class="ui-g-12 ui-fluid">
          <label>Observação</label>
          <textarea pInputTextarea rows="3" name="observacao" formControlName="observacao"></textarea>
       </div>
 
+      <div class="ui-g-6 ui-g-offset-6 ui-md-2 ui-md-offset-10 ui-fluid"
+         *ngIf="!formulario.get('anexo').value">
+         <p-fileUpload name="anexo" mode="basic" auto="true" maxFileSize="1000000000"
+            chooseLabel="Anexar" accept="image/*,application/*"
+            [url]="urlUploadAnexo"
+            (onBeforeSend)="antesUploadAnexo($event)"
+            (onUpload)="aoTerminarUploadAnexo($event)"
+            (onError)="erroUpload($event)"
+            [hidden]="uploadEmAndamento"></p-fileUpload>
+
+            <p-progressSpinner [hidden]="!uploadEmAndamento"
+               [style]="{ width: '25px', height: '25px' }"></p-progressSpinner>
+      </div>
+
+      <div class="ui-g-12" *ngIf="formulario.get('anexo').value" dir="rtl">
+         <button pButton type="button" class="ui-button-danger" icon="fa-close"
+            pTooltip="Remover anexo" tooltipPosition="top"
+            (click)="removerAnexo()"></button>
+         <a target="_blank" pTooltip="Baixar anexo" tooltipPosition="top"
+            [href]="formulario.get('urlAnexo').value">{{ nomeAnexo }}</a>
+      </div>
+
       <div class="ui-g-12">
-         <button pButton type="submit" label="Salvar" [disabled]="formulario.invalid"></button>
+         <button pButton type="submit" label="Salvar" [disabled]="formulario.invalid || uploadEmAndamento"></button>
          <button pButton type="button" label="Novo" class="ui-button-info"
             (click)="novo()"></button>
          <a routerLink="/lancamentos">Voltar para a pesquisa</a>
