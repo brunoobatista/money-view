@@ -30,6 +30,7 @@ export class LancamentoCadastroComponent implements OnInit {
    pessoas = [];
    // lancamento = new Lancamento();
    formulario: FormGroup;
+   uploadEmAndamento = false;
 
    constructor(
       private categoriaService: CategoriaService,
@@ -60,6 +61,47 @@ export class LancamentoCadastroComponent implements OnInit {
       console.log(this.formulario);
    }
 
+   antesUploadAnexo(event) {
+      event.xhr.setRequestHeader('Authorization', 'Bearer ' + localStorage.getItem('token') );
+
+      this.uploadEmAndamento = true;
+   }
+
+   aoTerminarUploadAnexo(event) {
+      const anexo = JSON.parse(event.xhr.response);
+
+      this.formulario.patchValue({
+         anexo: anexo.nome,
+         urlAnexo: anexo.url
+      });
+
+      this.uploadEmAndamento = false;
+   }
+
+   erroUpload(event) {
+      this.toasty.error('Erro ao tentar enviar anexo.');
+      this.uploadEmAndamento = false;
+   }
+
+   removerAnexo() {
+      this.formulario.patchValue({
+         anexo: null,
+         urlAnexo: null
+      });
+   }
+
+   get nomeAnexo() {
+      const nome = this.formulario.get('anexo').value;
+      if (nome) {
+         return nome.substring(nome.indexOf('_') + 1, nome.length);
+      }
+      return '';
+   }
+
+   get urlUploadAnexo() {
+      return this.lancamentoService.urlUploadAnexo();
+   }
+
    configurarFormulario() {
       this.formulario = this.formBuilder.group({
          codigo: [],
@@ -76,7 +118,9 @@ export class LancamentoCadastroComponent implements OnInit {
             codigo: [null, this.validarObrigatoriedade],
             nome: []
          }),
-         observacao: []
+         observacao: [],
+         anexo: [],
+         urlAnexo: []
       });
    }
 
