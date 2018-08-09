@@ -67,16 +67,23 @@
             [url]="urlUploadAnexo"
             (onBeforeSend)="antesUploadAnexo($event)"
             (onUpload)="aoTerminarUploadAnexo($event)"
-            (onError)="erroUpload($event)"></p-fileUpload>
+            (onError)="erroUpload($event)"
+            [hidden]="uploadEmAndamento"></p-fileUpload>
+
+            <p-progressSpinner [hidden]="!uploadEmAndamento"
+               [style]="{ width: '25px', height: '25px' }"></p-progressSpinner>
       </div>
 
-      <div class="ui-g-12 ui-fluid" *ngIf="formulario.get('anexo').value" dir="rtl">
+      <div class="ui-g-12" *ngIf="formulario.get('anexo').value" dir="rtl">
+         <button pButton type="button" class="ui-button-danger" icon="fa-close"
+            pTooltip="Remover anexo" tooltipPosition="top"
+            (click)="removerAnexo()"></button>
          <a target="_blank" pTooltip="Baixar anexo" tooltipPosition="top"
             [href]="formulario.get('urlAnexo').value">{{ nomeAnexo }}</a>
       </div>
 
       <div class="ui-g-12">
-         <button pButton type="submit" label="Salvar" [disabled]="formulario.invalid"></button>
+         <button pButton type="submit" label="Salvar" [disabled]="formulario.invalid || uploadEmAndamento"></button>
          <button pButton type="button" label="Novo" class="ui-button-info"
             (click)="novo()"></button>
          <a routerLink="/lancamentos">Voltar para a pesquisa</a>
