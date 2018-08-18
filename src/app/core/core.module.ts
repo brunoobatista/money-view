@@ -1,5 +1,6 @@
 import { Title } from '@angular/platform-browser';
 import { RouterModule } from '@angular/router';
+import { HttpClientModule } from '@angular/common/http';
 import { NgModule, LOCALE_ID } from '@angular/core';
 import { CommonModule, registerLocaleData } from '@angular/common';
 import localePt from '@angular/common/locales/pt';
@@ -7,7 +8,8 @@ import localePt from '@angular/common/locales/pt';
 import { ToastyModule } from 'ng2-toasty';
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
 import { ConfirmationService } from 'primeng/api';
-import { JwtHelper } from 'angular2-jwt';
+import { JwtHelperService } from '@auth0/angular-jwt';
+import { MoneyHttp } from '../seguranca/money-http';
 
 import { ErrorHandlerService } from './error-handler.service';
 import { NavbarComponent } from './navbar/navbar.component';
@@ -26,6 +28,7 @@ registerLocaleData(localePt);
 @NgModule({
    imports: [
       CommonModule,
+      HttpClientModule,
       RouterModule,
       ToastyModule.forRoot(),
       ConfirmDialogModule,
@@ -45,13 +48,14 @@ registerLocaleData(localePt);
       PessoaService,
       ErrorHandlerService,
       AuthService,
+      MoneyHttp,
 
       CategoriaService,
       DashboardService,
       RelatoriosService,
 
       ConfirmationService,
-      JwtHelper,
+      JwtHelperService,
       Title,
       { provide: LOCALE_ID, useValue: 'pt'}
    ]
