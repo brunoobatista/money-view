@@ -1,7 +1,6 @@
-import { URLSearchParams } from '@angular/http';
+import { MoneyHttp } from './../seguranca/money-http';
+import { HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-
-import { AuthHttp } from 'angular2-jwt';
 
 import { Lancamento } from './../core/model';
 
@@ -22,7 +21,7 @@ export class LancamentoService {
 
    lancamentosUrl: string;
 
-   constructor(private http: AuthHttp) {
+   constructor(private http: MoneyHttp) {
       this.lancamentosUrl = `${environment.apiUrl}/lancamentos`;
    }
 
@@ -31,42 +30,45 @@ export class LancamentoService {
    }
 
    pesquisar(filtro: LancamentoFiltro): Promise<any> {
-      const params = new URLSearchParams();
-
-      params.set('page', filtro.pagina.toString());
-      params.set('size', filtro.itensPorPagina.toString());
+      let params = new HttpParams({
+         fromObject: {
+            page: filtro.pagina.toString(),
+            size: filtro.itensPorPagina.toString()
+         }
+      });
 
       if (filtro.descricao) {
-         params.set('descricao', filtro.descricao);
+         params = params.append('descricao', filtro.descricao);
       }
       if (filtro.dataVencimentoInicio) {
-         params.set('dataVencimentoDe', moment(filtro.dataVencimentoInicio).format('YYYY-MM-DD'));
+         params = params.append('dataVencimentoDe', moment(filtro.dataVencimentoInicio).format('YYYY-MM-DD'));
       }
       if (filtro.dataVencimentoFim) {
-         params.set('dataVencimentoAte', moment(filtro.dataVencimentoFim).format('YYYY-MM-DD'));
+         params = params.append('dataVencimentoAte', moment(filtro.dataVencimentoFim).format('YYYY-MM-DD'));
       }
 
-      return this.http.get(`${this.lancamentosUrl}?resumo`, { search: params })
+      return this.http.get<any>(`${this.lancamentosUrl}?resumo`, { params })
       .toPromise()
       .then(response => {
-            const responseJson = response.json();
             const resultado = {
-               lancamentos: responseJson.content,
-               total: responseJson.totalElements
+               lancamentos: response.content,
+               total: response.totalElements
             };
             return resultado;
          });
    }
 
    excluir(codigo: number, posicaoDaPagina: number, itensPorPagina: number): Promise<any> {
-      const params = new URLSearchParams();
-
       const dadosPagina = posicaoDaPagina + itensPorPagina - 1;
 
-      params.set('page', `${dadosPagina}`);
-      params.set('size', '1');
+      const params = new HttpParams({
+         fromObject: {
+            page: `${dadosPagina}`,
+            size: '1'
+         }
+      });
 
-      return this.http.delete(`${this.lancamentosUrl}/${codigo}`)
+      return this.http.delete<any>(`${this.lancamentosUrl}/${codigo}`)
          .toPromise()
          .then(response => {
             let proximoObjeto;
@@ -80,40 +82,37 @@ export class LancamentoService {
    }
 
    buscarProximo(params, dadosPagina): Promise<any> {
-      return this.http.get(`${this.lancamentosUrl}?resumo`, { search: params })
+      return this.http.get<any>(`${this.lancamentosUrl}?resumo`, { params })
       .toPromise()
       .then(resp => {
-         const responseJson = resp.json();
          const resultado = {
-            lancamentos: responseJson.content,
-            total: responseJson.totalElements
+            lancamentos: resp.content,
+            total: resp.totalElements
          };
          return (resultado.total + 1) < dadosPagina ? null : resultado;
       });
    }
 
    adicionar(lancamento: Lancamento): Promise<Lancamento> {
-      return this.http.post(this.lancamentosUrl, JSON.stringify(lancamento))
-         .toPromise()
-         .then(resposta => resposta.json());
+      return this.http.post<Lancamento>(this.lancamentosUrl, lancamento)
+         .toPromise();
    }
 
    atualizar(lancamento: Lancamento): Promise<Lancamento> {
-      return this.http.put(`${this.lancamentosUrl}/${lancamento.codigo}`,
-            JSON.stringify(lancamento))
+      return this.http.put<Lancamento>(`${this.lancamentosUrl}/${lancamento.codigo}`, lancamento)
          .toPromise()
          .then(resposta => {
-            const lancamentoAtualizado = resposta.json() as Lancamento;
+            const lancamentoAtualizado = resposta;
             this.conveterStringParaDatas([lancamentoAtualizado]);
             return lancamentoAtualizado;
          });
    }
 
    buscarPorCodigo(codigo: number): Promise<Lancamento> {
-      return this.http.get(`${this.lancamentosUrl}/${codigo}`)
+      return this.http.get<Lancamento>(`${this.lancamentosUrl}/${codigo}`)
          .toPromise()
          .then(resposta => {
-            const lancamento = resposta.json() as Lancamento;
+            const lancamento = resposta;
             this.conveterStringParaDatas([lancamento]);
             return lancamento;
          });
